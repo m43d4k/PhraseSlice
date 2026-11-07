@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PhraseSlice transcript v1",
+  "description": "区間IDは0始まり、単語IDは録音全体で1始まりの連番。少なくとも1語を含む。単語は開始時刻順に並ぶ。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "source", "language", "time_unit", "text", "segments"],
+  "properties": {
+    "schema_version": {"type": "integer", "const": 1},
+    "source": {"type": "string", "minLength": 1, "description": "入力WAVのパス。相対パスの基準はこのJSONのディレクトリ。"},
+    "language": {"type": "string", "minLength": 1, "description": "Whisperが返す言語コード。"},
+    "time_unit": {"const": "seconds"},
+    "text": {"type": "string", "description": "録音全体の文字起こし。"},
+    "segments": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/segment"},
+      "contains": {"properties": {"words": {"minItems": 1}}}
+    }
+  },
+  "$defs": {
+    "seconds": {"type": "number", "minimum": 0, "description": "WAV先頭からの秒数。start ≤ end とし、同じ時刻も許容する。"},
+    "segment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "start", "end", "text", "words"],
+      "properties": {
+        "id": {"type": "integer", "minimum": 0},
+        "start": {"$ref": "#/$defs/seconds"},
+        "end": {"$ref": "#/$defs/seconds"},
+        "text": {"type": "string"},
+        "words": {"type": "array", "items": {"$ref": "#/$defs/word"}}
+      }
+    },
+    "word": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "word", "start", "end"],
+      "properties": {
+        "id": {"type": "integer", "minimum": 1},
+        "word": {"type": "string", "minLength": 1, "description": "先頭の空白や句読点を含め、認識した表記を保持する。"},
+        "start": {"$ref": "#/$defs/seconds"},
+        "end": {"$ref": "#/$defs/seconds"},
+        "probability": {"type": "number", "minimum": 0, "maximum": 1, "description": "単語の認識確率。取得できた場合に含める。"}
+      }
+    }
+  },
+  "examples": [{
+    "schema_version": 1,
+    "source": "source/speech.wav",
+    "language": "en",
+    "time_unit": "seconds",
+    "text": "Hello.",
+    "segments": [{
+      "id": 0, "start": 0.2, "end": 0.7, "text": " Hello.",
+      "words": [{"id": 1, "word": " Hello.", "start": 0.2, "end": 0.7, "probability": 0.98}]
+    }]
+  }]
+}

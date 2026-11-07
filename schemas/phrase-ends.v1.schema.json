@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PhraseSlice フレーズ末尾の単語ID",
+  "description": "Codexが選んだ各フレーズの末尾IDを昇順に並べる。最後の値は対応する文字起こしの最終単語ID。",
+  "type": "array",
+  "minItems": 1,
+  "uniqueItems": true,
+  "items": {"type": "integer", "minimum": 1},
+  "examples": [[14, 25, 42]]
+}
