@@ -1,0 +1,14 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+
+# 録音素材と分割処理の出力
+*.[wW][aA][vV]
+transcript.json
+phrases.json
+
+# macOS
+.DS_Store
